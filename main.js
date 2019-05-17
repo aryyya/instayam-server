@@ -2,6 +2,7 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const morgan = require('morgan')
 const jwt = require('jsonwebtoken')
+const cors = require('cors')
 
 // Server initialization.
 
@@ -14,27 +15,27 @@ server.use(bodyParser.json())
 
 server.use(morgan('dev'))
 
+server.use(cors())
+
 // State.
 
 const users = [
-  { id: 1, username: 'jerry@example.com',  password: 'helloworld123', name: 'Jerry Seinfeld'  },
-  { id: 2, username: 'larry@example.com',  password: 'helloworld123', name: 'Larry David'     },
-  { id: 3, username: 'george@example.com', password: 'helloworld123', name: 'George Costanza' },
-  { id: 4, username: 'kramer@example.com', password: 'helloworld123', name: 'Cosmo Kramer'    },
-  { id: 5, username: 'elaine@example.com', password: 'helloworld123', name: 'Elaine Benes'    },
+  { id: 1, email: 'jerry@example.com',  password: 'helloworld123', name: 'Jerry Seinfeld'  },
+  { id: 2, email: 'larry@example.com',  password: 'helloworld123', name: 'Larry David'     },
+  { id: 3, email: 'george@example.com', password: 'helloworld123', name: 'George Costanza' },
+  { id: 4, email: 'kramer@example.com', password: 'helloworld123', name: 'Cosmo Kramer'    },
+  { id: 5, email: 'elaine@example.com', password: 'helloworld123', name: 'Elaine Benes'    },
 ]
 
 // Routes.
 
 server.post('/login', (req, res) => {
-  const { username, password } = req.body
+  const { email, password } = req.body
 
-  const user = users.filter(u => u.username === username && u.password === password)[0]
+  const user = users.filter(u => u.email === email && u.password === password)[0]
 
   if (!user) {
-    return res.json({
-      message: 'invalid credentials'
-    })
+    return res.status(401).end()
   }
 
   const token = jwt.sign({
