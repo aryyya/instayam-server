@@ -12,6 +12,10 @@ server.get('/', (req, res) => {
   res.end('Hello, world!')
 })
 
+server.get('*', (req, res) => {
+  res.sendStatus(404)
+})
+
 const port = process.env.PORT || 8085
 server.listen(port, () => {
   console.log(`Listening on port ${port}.`)
