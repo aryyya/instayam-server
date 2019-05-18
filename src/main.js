@@ -1,6 +1,7 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const morgan = require('morgan')
+const cors = require('cors')
 
 // server init
 
@@ -11,6 +12,8 @@ const server = express()
 server.use(morgan('dev'))
 
 server.use(bodyParser.json())
+
+server.use(cors())
 
 // root routes
 
