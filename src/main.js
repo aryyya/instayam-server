@@ -24,6 +24,7 @@ server.get('/', (req, res) => {
 // other routes
 
 server.use('/auth', require('./routes/auth'))
+server.use('/resource', require('./routes/resource'))
 
 server.get('*', (req, res) => {
   res.sendStatus(404)
