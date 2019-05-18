@@ -1,5 +1,6 @@
 const { Router } = require('express')
 const status = require('http-status')
+const jwt = require('jsonwebtoken')
 
 const router = Router()
 
@@ -29,6 +30,24 @@ router.post('/login', (req, res) => {
       .send('invalid credentials')
     return
   }
+
+  const token = getToken({
+    id: user.id,
+    username: user.username
+  })
+
+  res
+    .status(status.OK)
+    .send({
+      token
+    })
 })
+
+const secret = 'this is a secret'
+const expiresIn = '3 hours'
+
+const getToken = (data) => {
+  return jwt.sign({ data }, secret, { expiresIn })
+}
 
 module.exports = router
