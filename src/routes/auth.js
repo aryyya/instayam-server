@@ -31,7 +31,7 @@ router.post('/login', (req, res) => {
     return
   }
 
-  const token = getAuthToken({
+  const authToken = getAuthToken({
     id: user.id,
     username: user.username
   })
@@ -39,7 +39,7 @@ router.post('/login', (req, res) => {
   res
     .status(status.OK)
     .send({
-      token
+      authToken
     })
 })
 
