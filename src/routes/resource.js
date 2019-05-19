@@ -1,6 +1,7 @@
 const { Router } = require('express')
 const status = require('http-status')
 const { hasAuthToken } = require('../utility')
+const { User } = require('../models/models')
 
 const router = Router()
 
@@ -11,9 +12,12 @@ router.get('/', (req, res) => {
 })
 
 router.get('/secret', hasAuthToken, (req, res) => {
-  res
-    .status(status.OK)
-    .send('This is a secret resource, you should be logged in to see this.')
+  User.findAll()
+    .then(users => {
+      res
+        .status(status.OK)
+        .send(users)
+    })
 })
 
 module.exports = router
