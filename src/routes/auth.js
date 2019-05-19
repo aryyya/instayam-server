@@ -1,7 +1,7 @@
 const { Router } = require('express')
 const { getAuthToken } = require('../utility')
 const { compare } = require('bcrypt')
-const { User } = require('../models/models')
+const { User } = require('../models')
 const {
   OK,
   BAD_REQUEST,

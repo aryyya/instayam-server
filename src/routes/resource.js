@@ -1,7 +1,7 @@
 const { Router } = require('express')
 const status = require('http-status')
 const { hasAuthToken } = require('../utility')
-const { User } = require('../models/models')
+const { User } = require('../models')
 
 const router = Router()
 

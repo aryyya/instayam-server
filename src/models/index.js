@@ -1,5 +1,4 @@
 const Sequelize = require('sequelize')
-const { join } = require('path')
 
 const sequelize = new Sequelize({
   dialect: 'sqlite',
@@ -17,7 +16,7 @@ sequelize
   })
 
 const db = {
-  User: sequelize.import(join(__dirname, 'user.js'))
+  User: sequelize.import('./user.js')
 }
 
 module.exports = db
