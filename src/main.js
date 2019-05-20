@@ -34,5 +34,5 @@ server.get('*', (req, res) => {
 
 const port = process.env.PORT || 8085
 server.listen(port, () => {
-  console.log(`Listening on port ${port}.`)
+  console.log(`server listening on port ${port} in ${process.env.NODE_ENV || 'development'} mode`)
 })
