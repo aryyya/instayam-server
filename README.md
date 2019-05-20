@@ -1,6 +1,6 @@
 # instayam-server-temporary
 
-A mock token authentication server that will be replaced by a real Django backend.
+The server for an Instagram clone, built on Express, Sequelize, and Postgres.
 
 ## Todo
 
