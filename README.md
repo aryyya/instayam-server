@@ -1,4 +1,4 @@
-# instayam-server-temporary
+# instayam-server
 
 The server for an Instagram clone, built on Express, Sequelize, and Postgres.
 
