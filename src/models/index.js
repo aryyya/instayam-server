@@ -1,9 +1,11 @@
 const Sequelize = require('sequelize')
 
-const sequelize = new Sequelize({
-  dialect: 'sqlite',
-  storage: 'database.sqlite'
-})
+const databaseUrl = {
+  development: 'postgres://instayam:instayam@localhost:5432/instayam',
+  test:        'postgres://instayam:instayam@localhost:5432/instayam',
+  production:  process.env.DATABASE_URL
+}
+const sequelize = new Sequelize(databaseUrl[process.env.NODE_ENV || 'development'])
 
 sequelize
   .authenticate()
@@ -15,8 +17,6 @@ sequelize
     console.error(error)
   })
 
-const db = {
+module.exports = {
   User: sequelize.import('./user.js')
 }
-
-module.exports = db
