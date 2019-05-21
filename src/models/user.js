@@ -26,7 +26,10 @@ module.exports = (sequelize, {
     },
     full_name: {
       type: STRING,
-      allowNull: true
+      allowNull: true,
+      validate: {
+        len: [1, 100]
+      }
     },
     password_hash: {
       type: STRING,
