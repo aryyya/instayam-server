@@ -7,11 +7,19 @@ module.exports = (sequelize, {
   const User = sequelize.define('User', {
     email: {
       type: STRING,
-      allowNull: false
+      allowNull: false,
+      unique: true,
+      validate: {
+        isEmail: true
+      }
     },
     username: {
       type: STRING,
-      allowNull: false
+      allowNull: false,
+      unique: true,
+      validate: {
+        len: [2, 30]
+      }
     },
     full_name: {
       type: STRING,
@@ -30,7 +38,7 @@ module.exports = (sequelize, {
     .then(() => {
       User.create({ email: 'admin@example.com', username: 'admin', full_name: 'The Admin', password_hash: hashSync('admin', 10) })
       User.create({ email: 'guest@example.com', username: 'guest', full_name: 'The Guest', password_hash: hashSync('guest', 10) })
-    })  
+    })
 
   return User
 }
