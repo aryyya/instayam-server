@@ -18,7 +18,7 @@
     "sequelize": "^5.8.6"
   },
   "scripts": {
-    "start": "node src/main.js",
-    "dev": "nodemon src/main.js"
+    "start": "node bin/www",
+    "dev": "nodemon bin/www"
   }
 }
