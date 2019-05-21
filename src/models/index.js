@@ -7,16 +7,7 @@ const databaseUrl = {
 }
 const sequelize = new Sequelize(databaseUrl[process.env.NODE_ENV || 'development'])
 
-sequelize
-  .authenticate()
-  .then(() => {
-    console.log('db connection success')
-  })
-  .catch(error => {
-    console.error('db connect failure')
-    console.error(error)
-  })
-
 module.exports = {
+  sequelize,
   User: sequelize.import('./user')
 }

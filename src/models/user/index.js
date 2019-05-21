@@ -48,12 +48,6 @@ module.exports = (sequelize, {
     sequelize,
     modelName: 'user'
   })
-  
-  User.sync({ force: true })
-    .then(() => {
-      User.create({ email: 'admin@example.com', username: 'admin', fullName: 'The Admin', passwordHash: hashSync('admin', 10) })
-      User.create({ email: 'guest@example.com', username: 'guest', fullName: 'The Guest', passwordHash: hashSync('guest', 10) })
-    })
 
   return User
 }

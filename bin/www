@@ -1,10 +1,22 @@
 #!/usr/bin/env node
 
 const server = require('../src/server')
+const { sequelize } = require('../src/models')
+const colors = require('../src/colors')
 
 const { PORT, NODE_ENV } = process.env
 
 const port = PORT || 8085
-server.listen(port, () => {
-  console.log(`server listening on port ${port} in ${NODE_ENV || 'development'} mode`)
-})
+
+sequelize
+  .sync()
+  .then(() => {
+    console.log(colors.info('db synced'))
+    server.listen(port, () => {
+      console.log(colors.info(`server listening on port ${port} in ${NODE_ENV || 'development'} mode`))
+    })
+  })
+  .catch(error => {
+    console.error(colors.error('db not synced'))
+    console.error(error)
+  })
