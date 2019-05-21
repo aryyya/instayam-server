@@ -7,7 +7,7 @@ const getIsUniqueValidator = (model, field) => {
       }
     })
     if (record) {
-      throw new Error(`${field} ${value} already exists`)
+      throw new Error('Not unique')
     }
   }
 }

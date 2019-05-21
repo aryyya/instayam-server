@@ -1,6 +1,11 @@
 const Sequelize = require('sequelize')
 const { hashSync } = require('bcrypt')
-const { getIsUniqueValidator } = require('./utility')
+const {
+  USERNAME_MIN_LENGTH,
+  USERNAME_MAX_LENGTH,
+  FULL_NAME_MIN_LENGTH,
+  FULL_NAME_MAX_LENGTH
+} = require('./constants')
 
 module.exports = (sequelize, {
   STRING
@@ -11,8 +16,7 @@ module.exports = (sequelize, {
       allowNull: false,
       unique: true,
       validate: {
-        isEmail: true,
-        isUnique: getIsUniqueValidator('User', 'email')
+        isEmail: true
       }
     },
     username: {
@@ -20,18 +24,23 @@ module.exports = (sequelize, {
       allowNull: false,
       unique: true,
       validate: {
-        len: [2, 30],
-        isUnique: getIsUniqueValidator('User', 'username')
-      },
+        len: [
+          USERNAME_MIN_LENGTH,
+          USERNAME_MAX_LENGTH
+        ]
+      }
     },
-    full_name: {
+    fullName: {
       type: STRING,
       allowNull: true,
       validate: {
-        len: [1, 100]
+        len: [
+          FULL_NAME_MIN_LENGTH,
+          FULL_NAME_MAX_LENGTH
+        ]
       }
     },
-    password_hash: {
+    passwordHash: {
       type: STRING,
       allowNull: false
     }
@@ -42,8 +51,8 @@ module.exports = (sequelize, {
   
   User.sync({ force: true })
     .then(() => {
-      User.create({ email: 'admin@example.com', username: 'admin', full_name: 'The Admin', password_hash: hashSync('admin', 10) })
-      User.create({ email: 'guest@example.com', username: 'guest', full_name: 'The Guest', password_hash: hashSync('guest', 10) })
+      User.create({ email: 'admin@example.com', username: 'admin', fullName: 'The Admin', passwordHash: hashSync('admin', 10) })
+      User.create({ email: 'guest@example.com', username: 'guest', fullName: 'The Guest', passwordHash: hashSync('guest', 10) })
     })
 
   return User

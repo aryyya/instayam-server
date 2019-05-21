@@ -18,5 +18,5 @@ sequelize
   })
 
 module.exports = {
-  User: sequelize.import('./user.js')
+  User: sequelize.import('./user')
 }
