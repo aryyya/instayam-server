@@ -9,7 +9,7 @@ const {
   hash
 } = require('bcrypt')
 const { User } = require('../../models')
-const { check } = require('express-validator/check')
+const { body } = require('express-validator/check')
 const { getIsUniqueValidator } = require('../../models/utility')
 const {
   USERNAME_MIN_LENGTH,
@@ -25,24 +25,24 @@ const router = Router()
 // POST /sign-up
 
 const signUpValidations = [
-  check('email')
+  body('email')
     .exists()
     .isEmail()
     .custom(getIsUniqueValidator('User', 'email')),
-  check('username')
+  body('username')
     .exists()
     .isLength({
       min: USERNAME_MIN_LENGTH,
       max: USERNAME_MAX_LENGTH
     })
     .custom(getIsUniqueValidator('User', 'username')),
-  check('password')
+  body('password')
     .exists()
     .isLength({
       min: PASSWORD_MIN_LENGTH,
       max: PASSWORD_MAX_LENGTH
     }),
-  check('fullName')
+  body('fullName')
     .exists()
     .isLength({
       min: FULL_NAME_MIN_LENGTH,
@@ -71,9 +71,9 @@ router.post('/sign-up', signUpValidations, checkValidationErrors, async (request
 // POST /login
 
 const loginValidations = [
-  check('username')
+  body('username')
     .exists(),
-  check('password')
+  body('password')
     .exists()
 ]
 
