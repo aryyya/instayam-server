@@ -1,71 +1,90 @@
 const { Router } = require('express')
-const { getAuthToken } = require('../utility')
+const { getAuthToken } = require('../../utility')
 const {
   compare,
   hash
 } = require('bcrypt')
-const { User } = require('../models')
+const { User } = require('../../models')
 const {
   OK,
   BAD_REQUEST,
   UNAUTHORIZED
 } = require('http-status')
 const { ValidationError } = require('sequelize')
+const { check, validationResult } = require('express-validator/check')
+const { getIsUniqueValidator } = require('../../models/utility')
+const {
+  USERNAME_MIN_LENGTH,
+  USERNAME_MAX_LENGTH,
+  FULL_NAME_MIN_LENGTH,
+  FULL_NAME_MAX_LENGTH,
+  PASSWORD_MIN_LENGTH,
+  PASSWORD_MAX_LENGTH
+} = require('../../models/user/constants')
 
 const router = Router()
 
-router.post('/login', async (request, response) => {
-  try {
-    const {
-      username,
-      password
-    } = request.body
-  
-    if (!username || !password) {
-      throw 'MISSING_PARAMETERS'
-    }
-
-    const user = await User.findOne({
-      where: {
-        username
-      }
+router.post('/sign-up', [
+  check('email')
+    .isEmail()
+    .custom(getIsUniqueValidator('User', 'email')),
+  check('username')
+    .isLength({
+      min: USERNAME_MIN_LENGTH,
+      max: USERNAME_MAX_LENGTH
     })
-
-    if (!user) {
-      throw 'USER_NOT_FOUND'
-    }
-
-    if (!await compare(password, user.password_hash)) {
-      throw 'INVALID_CREDENTIALS'
-    }
-
-    const authToken = getAuthToken({
-      id: user.id,
-      username: user.username
+    .custom(getIsUniqueValidator('User', 'username')),
+  check('password')
+    .isLength({
+      min: PASSWORD_MIN_LENGTH,
+      max: PASSWORD_MAX_LENGTH
+    }),
+  check('fullName')
+    .isLength({
+      min: FULL_NAME_MIN_LENGTH,
+      max: FULL_NAME_MAX_LENGTH
     })
-
+],
+async (
+  request,
+  response
+) => {
+  const errors = validationResult(request)
+  if (!errors.isEmpty()) {
     response
-      .status(OK)
-      .send({
-        authToken
+      .status(BAD_REQUEST)
+      .json({
+        errors: errors.array()
       })
+    return
   }
 
-  catch (error) {
-    if (error === 'MISSING_PARAMETERS') {
-      response
-        .status(BAD_REQUEST)
-        .send('required parameters: username, password')
-    }
+  const {
+    email,
+    username,
+    password,
+    fullName
+  } = request.body
 
-    else if (error === 'INVALID_CREDENTIALS' || error === 'USER_NOT_FOUND') {
-      response
-        .status(UNAUTHORIZED)
-        .send('invalid credentials')
-    }
+  const passwordHash = await hash(password, 10)
 
-    else throw error
-  }
+  const user = await User.create({
+    email,
+    username,
+    passwordHash,
+    fullName
+  })
+
+  const authToken = getAuthToken({
+    id: user.id,
+    username: user.username
+  })
+
+  response
+    .status(OK)
+    .send({
+      authToken
+    })
 })
 
 router.post('/sign-up', async (request, response) => {
