@@ -1,17 +1,15 @@
 const { Router } = require('express')
-const { getAuthToken } = require('../../utility')
+const {
+  checkValidationErrors,
+  sendInvalidCredentialsResponse,
+  sendAuthTokenResponse
+} = require('../../utility')
 const {
   compare,
   hash
 } = require('bcrypt')
 const { User } = require('../../models')
-const {
-  OK,
-  BAD_REQUEST,
-  UNAUTHORIZED
-} = require('http-status')
-const { ValidationError } = require('sequelize')
-const { check, validationResult } = require('express-validator/check')
+const { check } = require('express-validator/check')
 const { getIsUniqueValidator } = require('../../models/utility')
 const {
   USERNAME_MIN_LENGTH,
@@ -24,41 +22,35 @@ const {
 
 const router = Router()
 
-router.post('/sign-up', [
+// POST /sign-up
+
+const signUpValidations = [
   check('email')
+    .exists()
     .isEmail()
     .custom(getIsUniqueValidator('User', 'email')),
   check('username')
+    .exists()
     .isLength({
       min: USERNAME_MIN_LENGTH,
       max: USERNAME_MAX_LENGTH
     })
     .custom(getIsUniqueValidator('User', 'username')),
   check('password')
+    .exists()
     .isLength({
       min: PASSWORD_MIN_LENGTH,
       max: PASSWORD_MAX_LENGTH
     }),
   check('fullName')
+    .exists()
     .isLength({
       min: FULL_NAME_MIN_LENGTH,
       max: FULL_NAME_MAX_LENGTH
     })
-],
-async (
-  request,
-  response
-) => {
-  const errors = validationResult(request)
-  if (!errors.isEmpty()) {
-    response
-      .status(BAD_REQUEST)
-      .json({
-        errors: errors.array()
-      })
-    return
-  }
+]
 
+router.post('/sign-up', signUpValidations, checkValidationErrors, async (request, response) => {
   const {
     email,
     username,
@@ -66,87 +58,42 @@ async (
     fullName
   } = request.body
 
-  const passwordHash = await hash(password, 10)
-
   const user = await User.create({
     email,
     username,
-    passwordHash,
+    passwordHash: await hash(password, 10),
     fullName
   })
 
-  const authToken = getAuthToken({
-    id: user.id,
-    username: user.username
-  })
-
-  response
-    .status(OK)
-    .send({
-      authToken
-    })
+  return sendAuthTokenResponse(response, user)
 })
 
-router.post('/sign-up', async (request, response) => {
-  try {
-    const {
-      email,
-      username,
-      password,
-      fullName
-    } = request.body
+// POST /login
 
-    if (!email || !username || !password || !fullName) {
-      throw 'MISSING_PARAMETERS'
+const loginValidations = [
+  check('username')
+    .exists(),
+  check('password')
+    .exists()
+]
+
+router.post('/login', loginValidations, checkValidationErrors, async (request, response) => {
+  const {
+    username,
+    password
+  } = request.body
+
+  const user = await User.findOne({
+    where: {
+      username
     }
+  })
 
-    if (password.length < 8 || password.length > 64) {
-      throw 'INVALID_PASSWORD_LENGTH'
-    }
-
-    const password_hash = await hash(password, 10)
-
-    const user = await User.create({
-      email,
-      username,
-      password_hash,
-      full_name: fullName
-    })
-
-    const authToken = getAuthToken({
-      id: user.id,
-      username: user.username
-    })
-
-    response
-      .status(OK)
-      .send({
-        authToken
-      })
+  if (!user || !await compare(password, user.passwordHash)) {
+    return sendInvalidCredentialsResponse(response)
   }
-  catch (error) {
-    if (error === 'MISSING_PARAMETERS') {
-      response
-        .status(BAD_REQUEST)
-        .send('required parameters: email, username, password, fullName')
-    }
 
-    else if (error === 'INVALID_PASSWORD_LENGTH') {
-      response
-        .status(BAD_REQUEST)
-        .send('password length must be between 8 and 64 characters')
-    }
-
-    else if (error instanceof ValidationError) {
-      error.errors.forEach(error => console.error(error))
-
-      response
-        .status(BAD_REQUEST)
-        .send(error.errors.map(error => error.message))
-    }
-
-    else throw error
-  }
+  return sendAuthTokenResponse(response, user)
 })
 
 module.exports = router
