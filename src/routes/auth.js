@@ -49,7 +49,6 @@ router.post('/login', async (request, response) => {
       .send({
         authToken
       })
-    return
   }
 
   catch (error) {
@@ -105,7 +104,6 @@ router.post('/sign-up', async (request, response) => {
       .send({
         authToken
       })
-    return
   }
   catch (error) {
     if (error === 'MISSING_PARAMETERS') {
@@ -121,6 +119,8 @@ router.post('/sign-up', async (request, response) => {
     }
 
     else if (error instanceof ValidationError) {
+      error.errors.forEach(error => console.error(error))
+
       response
         .status(BAD_REQUEST)
         .send('there was a validation error')
