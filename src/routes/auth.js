@@ -123,7 +123,7 @@ router.post('/sign-up', async (request, response) => {
 
       response
         .status(BAD_REQUEST)
-        .send('there was a validation error')
+        .send(error.errors.map(error => error.message))
     }
 
     else throw error

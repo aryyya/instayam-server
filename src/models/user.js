@@ -1,5 +1,6 @@
 const Sequelize = require('sequelize')
 const { hashSync } = require('bcrypt')
+const { getIsUniqueValidator } = require('./utility')
 
 module.exports = (sequelize, {
   STRING
@@ -10,7 +11,8 @@ module.exports = (sequelize, {
       allowNull: false,
       unique: true,
       validate: {
-        isEmail: true
+        isEmail: true,
+        isUnique: getIsUniqueValidator('User', 'email')
       }
     },
     username: {
@@ -18,8 +20,9 @@ module.exports = (sequelize, {
       allowNull: false,
       unique: true,
       validate: {
-        len: [2, 30]
-      }
+        len: [2, 30],
+        isUnique: getIsUniqueValidator('User', 'username')
+      },
     },
     full_name: {
       type: STRING,
