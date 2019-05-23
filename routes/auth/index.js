@@ -10,7 +10,7 @@ const {
 } = require('bcrypt')
 const { User } = require('../../models')
 const { body } = require('express-validator/check')
-const { getIsUniqueValidator } = require('../../models/utility')
+const { getIsUniqueValidator } = require('../../models/validators')
 const {
   USERNAME_MIN_LENGTH,
   USERNAME_MAX_LENGTH,
@@ -18,7 +18,7 @@ const {
   FULL_NAME_MAX_LENGTH,
   PASSWORD_MIN_LENGTH,
   PASSWORD_MAX_LENGTH
-} = require('../../models/user/constants')
+} = require('../../models/user/meta')
 
 const router = Router()
 

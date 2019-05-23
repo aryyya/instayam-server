@@ -1,11 +1,9 @@
-const Sequelize = require('sequelize')
-const { hashSync } = require('bcrypt')
 const {
   USERNAME_MIN_LENGTH,
   USERNAME_MAX_LENGTH,
   FULL_NAME_MIN_LENGTH,
   FULL_NAME_MAX_LENGTH
-} = require('./constants')
+} = require('./meta')
 
 module.exports = (sequelize, {
   STRING

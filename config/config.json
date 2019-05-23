@@ -1,0 +1,20 @@
+{
+  "development": {
+    "username": "instayam",
+    "password": "instayam",
+    "database": "instayam",
+    "host": "localhost",
+    "dialect": "postgres"
+  },
+  "test": {
+    "username": "instayam",
+    "password": "instayam",
+    "database": "instayam",
+    "host": "localhost",
+    "dialect": "postgres"
+  },
+  "production": {
+    "use_env_variable": "DATABASE_URL",
+    "dialect": "postgres"
+  }
+}

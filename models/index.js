@@ -1,13 +1,31 @@
 const Sequelize = require('sequelize')
+const config = require('../config/config')[process.env.NODE_ENV]
+const {
+  use_env_variable,
+  database,
+  username,
+  password
+} = config
 
-const databaseUrl = {
-  development: 'postgres://instayam:instayam@localhost:5432/instayam',
-  test:        'postgres://instayam:instayam@localhost:5432/instayam',
-  production:  process.env.DATABASE_URL
-}
-const sequelize = new Sequelize(databaseUrl[process.env.NODE_ENV || 'development'])
+const sequelize = use_env_variable
+  ? new Sequelize(process.env[use_env_variable], config)
+  : new Sequelize(database, username, password,  config)
 
-module.exports = {
+const db = {
+  Sequelize,
   sequelize,
-  User: sequelize.import('./user')
+  User: sequelize.import('./user'),
+  Task: sequelize.import('./task')
 }
+
+const dbModelNames = Object.keys(db).filter(key => {
+  return key.toLowerCase() !== 'sequelize'
+})
+
+dbModelNames.forEach(modelName => {
+  if (db[modelName].associate) {
+    db[modelName].associate(db)
+  }
+})
+
+module.exports = db
