@@ -6,10 +6,18 @@ const {
   username,
   password
 } = config
+const databaseConnectionUrl = process.env[use_env_variable]
+const { consoleError } = require('../console-color')
+
+if (use_env_variable && !databaseConnectionUrl) {
+  consoleError(`${use_env_variable} is not defined`)
+  consoleError('terminating process')
+  process.exit(1)
+}
 
 const sequelize = use_env_variable
-  ? new Sequelize(process.env[use_env_variable], config)
-  : new Sequelize(database, username, password,  config)
+  ? new Sequelize(databaseConnectionUrl, config)
+  : new Sequelize(database, username, password, config)
 
 const db = {
   Sequelize,

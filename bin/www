@@ -1,22 +1,28 @@
 #!/usr/bin/env node
 
-const server = require('../server')
-const { sequelize } = require('../models')
-const colors = require('../colors')
-
+const { consoleInfo, consoleError } = require('../console-color')
 const { PORT, NODE_ENV } = process.env
 
+const validEnvironments = ['production', 'development', 'test']
+if (!validEnvironments.includes(NODE_ENV)) {
+  consoleError(`NODE_ENV not set to one of: ${validEnvironments.join(', ')}`)
+  consoleError('terminating process')
+  process.exit(1)
+}
+
+const server = require('../server')
+const { sequelize } = require('../models')
 const port = PORT || 8085
 
 sequelize
   .sync()
   .then(() => {
-    console.log(colors.info('db synced'))
+    consoleInfo('db synced')
     server.listen(port, () => {
-      console.log(colors.info(`server listening on port ${port} in ${NODE_ENV || 'development'} mode`))
+      consoleInfo(`server listening on port ${port} in ${NODE_ENV || 'development'} mode`)
     })
   })
   .catch(error => {
-    console.error(colors.error('db not synced'))
-    console.error(error)
+    consoleError('db not synced')
+    consoleError(error)
   })
