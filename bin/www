@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-const server = require('../src/server')
-const { sequelize } = require('../src/models')
-const colors = require('../src/colors')
+const server = require('../server')
+const { sequelize } = require('../models')
+const colors = require('../colors')
 
 const { PORT, NODE_ENV } = process.env
 
