@@ -22,7 +22,8 @@
   "scripts": {
     "start": "cross-env NODE_ENV=production node bin/www",
     "dev": "cross-env NODE_ENV=development nodemon bin/www",
-    "test": "cross-env NODE_ENV=test mocha src/test/**/*.js"
+    "test": "cross-env NODE_ENV=test mocha src/test/**/*.js",
+    "sequelize": "sequelize"
   },
   "devDependencies": {
     "chai": "^4.2.0",

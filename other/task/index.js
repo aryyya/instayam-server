@@ -1,9 +1,15 @@
 module.exports = (sequelize, {
-  STRING
+  STRING,
+  BOOLEAN
 }) => {
   const Task = sequelize.define('Task', {
     description: {
       type: STRING,
+      allowNull: false
+    },
+    isComplete: {
+      type: BOOLEAN,
+      defaultValue: true,
       allowNull: false
     }
   }, {

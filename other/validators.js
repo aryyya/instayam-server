@@ -1,6 +1,6 @@
 const getIsUniqueValidator = (model, field) => {
   return async value => {
-    const models = require('.')
+    const models = require('../models')
     const record = await models[model].findOne({
       where: {
         [field]: value
