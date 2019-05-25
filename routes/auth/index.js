@@ -8,17 +8,15 @@ const {
   compare,
   hash
 } = require('bcrypt')
-const { User } = require('../../models')
 const { body } = require('express-validator/check')
-const { getIsUniqueValidator } = require('../../other/validators')
-const {
-  USERNAME_MIN_LENGTH,
-  USERNAME_MAX_LENGTH,
-  FULL_NAME_MIN_LENGTH,
-  FULL_NAME_MAX_LENGTH,
-  PASSWORD_MIN_LENGTH,
-  PASSWORD_MAX_LENGTH
-} = require('../../other/user/meta')
+
+// move to meta file
+const USERNAME_MIN_LENGTH  = 2
+const USERNAME_MAX_LENGTH  = 30
+const FULL_NAME_MIN_LENGTH = 2
+const FULL_NAME_MAX_LENGTH = 100
+const PASSWORD_MIN_LENGTH  = 8
+const PASSWORD_MAX_LENGTH  = 80
 
 const router = Router()
 
@@ -27,15 +25,13 @@ const router = Router()
 const signUpValidations = [
   body('email')
     .exists()
-    .isEmail()
-    .custom(getIsUniqueValidator('User', 'email')),
+    .isEmail(),
   body('username')
     .exists()
     .isLength({
       min: USERNAME_MIN_LENGTH,
       max: USERNAME_MAX_LENGTH
-    })
-    .custom(getIsUniqueValidator('User', 'username')),
+    }),
   body('password')
     .exists()
     .isLength({
@@ -58,12 +54,7 @@ router.post('/sign-up', signUpValidations, checkValidationErrors, async (request
     fullName
   } = request.body
 
-  const user = await User.create({
-    email,
-    username,
-    passwordHash: await hash(password, 10),
-    fullName
-  })
+  // create user here
 
   return sendAuthTokenResponse(response, user)
 })
@@ -83,11 +74,8 @@ router.post('/login', loginValidations, checkValidationErrors, async (request, r
     password
   } = request.body
 
-  const user = await User.findOne({
-    where: {
-      username
-    }
-  })
+  // find user here
+  const user = {}
 
   if (!user || !await compare(password, user.passwordHash)) {
     return sendInvalidCredentialsResponse(response)

@@ -11,18 +11,8 @@ if (!validEnvironments.includes(NODE_ENV)) {
 }
 
 const server = require('../server')
-const { sequelize } = require('../models')
 const port = PORT || 8085
 
-sequelize
-  .sync()
-  .then(() => {
-    consoleInfo('db synced')
-    server.listen(port, () => {
-      consoleInfo(`server listening on port ${port} in ${NODE_ENV || 'development'} mode`)
-    })
-  })
-  .catch(error => {
-    consoleError('db not synced')
-    consoleError(error)
-  })
+server.listen(port, () => {
+  consoleInfo(`server listening on port ${port} in ${NODE_ENV || 'development'} mode`)
+})
