@@ -1,6 +1,6 @@
 # instayam-server
 
-The server for an Instagram clone, built on Express, Sequelize, and Postgres.
+The server for an Instagram clone, built on Express, Sequelize, and Knex.
 
 ## Todo
 
