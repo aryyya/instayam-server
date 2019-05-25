@@ -9,6 +9,7 @@ The server for an Instagram clone, built on Express, Knex, and Postgres.
 - [ ] Add migrations.
 - [ ] Add fixtures.
 - [ ] Add tests.
+- [ ] Document project layout.
 
 ## Development
 
