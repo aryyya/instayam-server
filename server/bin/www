@@ -1,0 +1,17 @@
+#!/usr/bin/env node
+
+const { checkNodeEnv } = require('../../common/helpers/check-node-env')
+const { consoleInfo } = require('../../common/helpers/console')
+const {
+  PORT,
+  NODE_ENV
+} = process.env
+
+checkNodeEnv()
+
+const server = require('../../server')
+const port = PORT || 8085
+
+server.listen(port, () => {
+  consoleInfo(`server listening on port ${port} in ${NODE_ENV} mode`)
+})

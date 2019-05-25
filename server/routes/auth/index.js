@@ -3,7 +3,7 @@ const {
   checkValidationErrors,
   sendInvalidCredentialsResponse,
   sendAuthTokenResponse
-} = require('../utility')
+} = require('../helpers')
 const {
   compare,
   hash

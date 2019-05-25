@@ -14,5 +14,5 @@ The server for an Instagram clone, built on Express, Knex, and Postgres.
 
 - `yarn install`
 - Use Postgres.app for development and test database.
-- Execute `create-development-and-test-database.sql`.
+- Execute `scripts/create-development-and-test-database.sql`.
 - `yarn dev`
