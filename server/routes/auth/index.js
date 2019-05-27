@@ -4,11 +4,8 @@ const {
   sendInvalidCredentialsResponse,
   sendAuthTokenResponse
 } = require('../helpers')
-const {
-  compare,
-  hash
-} = require('bcrypt')
 const { body } = require('express-validator/check')
+const { User } = require('../../models')
 
 // move to meta file
 const USERNAME_MIN_LENGTH  = 2
@@ -54,7 +51,12 @@ router.post('/sign-up', signUpValidations, checkValidationErrors, async (request
     fullName
   } = request.body
 
-  // create user here
+  const user = await User.create({
+    email,
+    username,
+    password,
+    fullName
+  })
 
   return sendAuthTokenResponse(response, user)
 })
@@ -75,9 +77,12 @@ router.post('/login', loginValidations, checkValidationErrors, async (request, r
   } = request.body
 
   // find user here
-  const user = {}
+  const user = await User.verify({
+    username,
+    password
+  })
 
-  if (!user || !await compare(password, user.passwordHash)) {
+  if (!user) {
     return sendInvalidCredentialsResponse(response)
   }
 
