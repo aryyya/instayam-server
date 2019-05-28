@@ -2,11 +2,24 @@ const {
   hash,
   compare
 } = require('bcrypt')
+const getBaseModel = require('../helpers/get-base-model')
 
-const name = 'User'
-const tableName = 'users'
+const selectableProps = [
+  'id',
+  'username',
+  'email',
+  'passwordHash',
+  'created_at',
+  'updated_at'
+]
 
 module.exports = knex => {
+  const baseModel = getBaseModel({
+    knex,
+    name: 'User',
+    tableName: 'users',
+    selectableProps
+  })
 
   const create = async ({
     email,
@@ -14,16 +27,12 @@ module.exports = knex => {
     password,
     fullName
   }) => {
-    const passwordHash = await hash(password, 10)
-
-    const user = await knex(tableName)
-      .insert({
-        email,
-        username,
-        passwordHash,
-        fullName
-      })
-
+    const user = await baseModel.create({
+      email,
+      username,
+      passwordHash: await hash(password, 10),
+      fullName
+    })
     return user
   }
 
@@ -31,22 +40,15 @@ module.exports = knex => {
     username,
     password
   }) => {
-
-    const user = await knex(tableName)
-      .where({
-        username
-      })
-      .first()
-
-    console.log(user)
+    const user = await baseModel.findOne({
+      username
+    })
 
     if (!user) {
-      throw 'USERNAME_NOT_FOUND'
+      throw 'USER_NOT_FOUND'
     }
 
-    const isEqual = await compare(password, user.passwordHash)
-
-    if (!isEqual) {
+    if (!await compare(password, user.passwordHash)) {
       throw 'INVALID_CREDENTIALS'
     }
 
@@ -54,8 +56,7 @@ module.exports = knex => {
   }
 
   return {
-    name,
-    tableName,
+    ...baseModel,
     create,
     verify
   }

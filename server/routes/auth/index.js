@@ -6,6 +6,8 @@ const {
 } = require('../helpers')
 const { body } = require('express-validator/check')
 const { User } = require('../../models')
+const sendError = require('../../helpers/send-error')
+const { UNAUTHORIZED } = require('http-status')
 
 // move to meta file
 const USERNAME_MIN_LENGTH  = 2
@@ -75,18 +77,25 @@ router.post('/login', loginValidations, checkValidationErrors, async (request, r
     username,
     password
   } = request.body
-
-  // find user here
-  const user = await User.verify({
-    username,
-    password
-  })
-
-  if (!user) {
-    return sendInvalidCredentialsResponse(response)
+  try {
+    const user = await User.verify({
+      username,
+      password
+    })
+    return sendAuthTokenResponse(response, user)
   }
-
-  return sendAuthTokenResponse(response, user)
+  catch (error) {
+    switch (error) {
+      case 'USER_NOT_FOUND':
+      case 'INVALID_CREDENTIALS':
+        return next(sendError({
+          code: UNAUTHORIZED,
+          message: 'invalid credentials'
+        }))
+      default:
+        return next(sendError())
+    }
+  }
 })
 
 module.exports = router
