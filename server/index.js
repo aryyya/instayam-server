@@ -2,7 +2,6 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const morgan = require('morgan')
 const cors = require('cors')
-const { NOT_FOUND } = require('http-status')
 
 // server init
 
@@ -26,10 +25,7 @@ const {
 server.use('/auth', auth)
 server.use('/resource', resource)
 
-// catch all routes
-
-server.get('*', (request, response) => {
-  response.sendStatus(NOT_FOUND)
-})
+const errorHandlers = require('./middleware/error-handlers')
+server.use(errorHandlers)
 
 module.exports = server

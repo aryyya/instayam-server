@@ -70,7 +70,7 @@ const loginValidations = [
     .exists()
 ]
 
-router.post('/login', loginValidations, checkValidationErrors, async (request, response) => {
+router.post('/login', loginValidations, checkValidationErrors, async (request, response, next) => {
   const {
     username,
     password
