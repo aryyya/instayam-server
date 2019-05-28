@@ -4,11 +4,12 @@ const {
 } = require('bcrypt')
 const getBaseModel = require('../helpers/get-base-model')
 
+const name = 'User'
+const tableName = 'users'
 const selectableProps = [
   'id',
   'username',
   'email',
-  'passwordHash',
   'created_at',
   'updated_at'
 ]
@@ -16,8 +17,8 @@ const selectableProps = [
 module.exports = knex => {
   const baseModel = getBaseModel({
     knex,
-    name: 'User',
-    tableName: 'users',
+    name,
+    tableName,
     selectableProps
   })
 
@@ -40,9 +41,11 @@ module.exports = knex => {
     username,
     password
   }) => {
-    const user = await baseModel.findOne({
-      username
-    })
+    const user = await knex(tableName)
+      .select()
+      .first()
+      .where({ username })
+      .timeout(baseModel.timeout)
 
     if (!user) {
       throw 'USER_NOT_FOUND'
