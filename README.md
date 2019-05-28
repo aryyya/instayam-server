@@ -8,6 +8,7 @@ The server for an Instagram clone, built on Express, Knex, and Postgres.
 - [x] Add test and production db.
 - [ ] Convert from Sequelize to Knex.
 - [x] Add error handling middleware module.
+- [ ] Catch errors that are rethrown in global middleware and log a stacktrace.
 - [ ] Decouple business logic from router into controllers.
 - [ ] Add migrations.
 - [ ] Add fixtures.
