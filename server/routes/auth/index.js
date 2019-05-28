@@ -85,16 +85,15 @@ router.post('/login', loginValidations, checkValidationErrors, async (request, r
     return sendAuthTokenResponse(response, user)
   }
   catch (error) {
-    switch (error) {
-      case 'USER_NOT_FOUND':
-      case 'INVALID_CREDENTIALS':
-        return next(sendError({
+    if (error === 'USER_NOT_FOUND' || error === 'INVALID_CREDENTIALS') {
+      return next(
+        sendError({
           code: UNAUTHORIZED,
           message: 'invalid credentials'
-        }))
-      default:
-        return next(sendError())
+        })
+      )
     }
+    throw error
   }
 })
 
