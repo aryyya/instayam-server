@@ -77,24 +77,22 @@ router.post('/login', loginValidations, checkValidationErrors, async (request, r
     username,
     password
   } = request.body
-  try {
-    const user = await User.verify({
-      username,
-      password
-    })
-    return sendAuthTokenResponse(response, user)
+
+  const user = await User.verify({
+    username,
+    password
+  })
+
+  if (user === User.NOT_FOUND || user === User.INVALID_CREDENTIALS) {
+    return next(
+      sendError({
+        code: UNAUTHORIZED,
+        message: 'invalid credentials'
+      })
+    )
   }
-  catch (error) {
-    if (error === 'USER_NOT_FOUND' || error === 'INVALID_CREDENTIALS') {
-      return next(
-        sendError({
-          code: UNAUTHORIZED,
-          message: 'invalid credentials'
-        })
-      )
-    }
-    throw error
-  }
+
+  return sendAuthTokenResponse(response, user)
 })
 
 module.exports = router

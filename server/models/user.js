@@ -14,6 +14,10 @@ const selectableProps = [
   'updated_at'
 ]
 
+// error constants
+const NOT_FOUND = 'user/not-found'
+const INVALID_CREDENTIALS = 'user/invalid-credentials'
+
 module.exports = knex => {
   const baseModel = getBaseModel({
     knex,
@@ -48,11 +52,11 @@ module.exports = knex => {
       .timeout(baseModel.timeout)
 
     if (!user) {
-      throw 'USER_NOT_FOUND'
+      return NOT_FOUND
     }
 
     if (!await compare(password, user.passwordHash)) {
-      throw 'INVALID_CREDENTIALS'
+      return INVALID_CREDENTIALS
     }
 
     return user
@@ -60,6 +64,12 @@ module.exports = knex => {
 
   return {
     ...baseModel,
+
+    // error constants
+    NOT_FOUND,
+    INVALID_CREDENTIALS,
+
+    // methods
     create,
     verify
   }
