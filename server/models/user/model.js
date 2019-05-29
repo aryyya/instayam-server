@@ -2,7 +2,11 @@ const {
   hash,
   compare
 } = require('bcrypt')
-const getBaseModel = require('../helpers/get-base-model')
+const getBaseModel = require('../../helpers/get-base-model')
+const {
+  NOT_FOUND,
+  INVALID_CREDENTIALS
+} = require('./error')
 
 const name = 'User'
 const tableName = 'users'
@@ -13,10 +17,6 @@ const selectableProps = [
   'created_at',
   'updated_at'
 ]
-
-// error constants
-const NOT_FOUND = 'user/not-found'
-const INVALID_CREDENTIALS = 'user/invalid-credentials'
 
 module.exports = knex => {
   const baseModel = getBaseModel({
@@ -64,12 +64,6 @@ module.exports = knex => {
 
   return {
     ...baseModel,
-
-    // error constants
-    NOT_FOUND,
-    INVALID_CREDENTIALS,
-
-    // methods
     create,
     verify
   }

@@ -1,21 +1,22 @@
-const fs = require('fs')
-const path = require('path')
 const knex = require('../../config/database')
 
-const getModelFiles = directory => {
-  return fs.readdirSync(directory)
-    .filter(file => file.indexOf('.') !== 0 && file !== 'index.js')
-    .map(file => path.join(directory, file))
-}
+const models = [
+  { name: 'User', path: './user' }
+]
 
-const files = getModelFiles(__dirname)
+module.exports = models.reduce((models, { name, path }) => {
+  const {
+    model,
+    error,
+    meta
+  } = require(path)
 
-const models = files.reduce((models, filename) => {
-  const model = require(filename)(knex)
-  if (model) {
-    models[model.name] = model
+  return {
+    ...models,
+    [name]: {
+      model: model(knex),
+      error,
+      meta
+    }
   }
-  return models
 }, {})
-
-module.exports = models

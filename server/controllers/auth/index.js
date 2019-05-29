@@ -4,14 +4,6 @@ const sendError = require('../../helpers/send-error')
 const { UNAUTHORIZED } = require('http-status')
 const { body } = require('express-validator/check')
 
-// move to meta file
-const USERNAME_MIN_LENGTH  = 2
-const USERNAME_MAX_LENGTH  = 30
-const FULL_NAME_MIN_LENGTH = 2
-const FULL_NAME_MAX_LENGTH = 100
-const PASSWORD_MIN_LENGTH  = 8
-const PASSWORD_MAX_LENGTH  = 80
-
 // POST /sign-up
 
 const postSignUpValidations = [
@@ -21,20 +13,20 @@ const postSignUpValidations = [
   body('username')
     .exists()
     .isLength({
-      min: USERNAME_MIN_LENGTH,
-      max: USERNAME_MAX_LENGTH
+      min: User.meta.USERNAME_MIN_LENGTH,
+      max: User.meta.USERNAME_MAX_LENGTH
     }),
   body('password')
     .exists()
     .isLength({
-      min: PASSWORD_MIN_LENGTH,
-      max: PASSWORD_MAX_LENGTH
+      min: User.meta.PASSWORD_MIN_LENGTH,
+      max: User.meta.PASSWORD_MAX_LENGTH
     }),
   body('fullName')
     .exists()
     .isLength({
-      min: FULL_NAME_MIN_LENGTH,
-      max: FULL_NAME_MAX_LENGTH
+      min: User.meta.FULL_NAME_MIN_LENGTH,
+      max: User.meta.FULL_NAME_MAX_LENGTH
     })
 ]
 
@@ -46,7 +38,7 @@ const postSignUp = async (request, response) => {
     fullName
   } = request.body
 
-  const user = await User.create({
+  const user = await User.model.create({
     email,
     username,
     password,
@@ -71,12 +63,12 @@ const postLogin = async (request, response, next) => {
     password
   } = request.body
 
-  const user = await User.verify({
+  const user = await User.model.verify({
     username,
     password
   })
 
-  if (user === User.NOT_FOUND || user === User.INVALID_CREDENTIALS) {
+  if (user === User.error.NOT_FOUND || user === User.error.INVALID_CREDENTIALS) {
     return next(
       sendError({
         code: UNAUTHORIZED,
