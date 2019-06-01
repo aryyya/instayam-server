@@ -23,7 +23,7 @@ const getSendErrorMiddleware = (errorCode, errorName) => {
           code: errorCode,
           name: errorName
         },
-        message: error.message || `${errorCode} ${errorName}`
+        details: error.details || `${errorCode} ${errorName}`
       })
   }
 }
@@ -36,7 +36,7 @@ const catchAll = (request, response, next) => {
         code: NOT_FOUND,
         name: 'not found'
       },
-      message: `${NOT_FOUND} not found`
+      details: `${NOT_FOUND} not found`
     })
 }
 

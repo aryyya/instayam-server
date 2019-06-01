@@ -5,8 +5,25 @@ const {
 const getBaseModel = require('../../helpers/get-base-model')
 const {
   NOT_FOUND,
-  INVALID_CREDENTIALS
+  INVALID_CREDENTIALS,
+  INVALID_DATA
 } = require('./error')
+const {
+  USERNAME_MIN_LENGTH,
+  USERNAME_MAX_LENGTH
+} = require('./meta')
+const Joi = require('@hapi/joi')
+
+const joiValidate = ({ data, schema }) => {
+  return Joi.validate(data, Joi.object().keys(schema), { abortEarly: false })
+}
+
+const joiInvalidDataError = results => {
+  return {
+    error: INVALID_DATA,
+    details: results.error.details.map(detail => detail.message)
+  }
+}
 
 const name = 'User'
 const tableName = 'users'
@@ -32,12 +49,33 @@ module.exports = knex => {
     password,
     fullName
   }) => {
+    const results = joiValidate({
+      data: {
+        email,
+        username,
+        password,
+        fullName
+      },
+      schema: {
+        email: Joi.string().email().required(),
+        username: Joi.string().min(USERNAME_MIN_LENGTH).max(USERNAME_MAX_LENGTH).required(),
+        password: Joi.string().required(),
+        fullName: Joi.string()
+      }
+    })
+    if (results.error) {
+      return joiInvalidDataError(results)
+    }
+
+    const passwordHash = await hash(password, 10)
+    
     const user = await baseModel.create({
       email,
       username,
-      passwordHash: await hash(password, 10),
+      passwordHash,
       fullName
     })
+
     return user
   }
 
@@ -45,6 +83,20 @@ module.exports = knex => {
     username,
     password
   }) => {
+    const results = joiValidate({
+      data: {
+        username,
+        password,
+      },
+      schema: {
+        username: Joi.string().required(),
+        password: Joi.string().required()
+      }
+    })
+    if (results.error) {
+      return joiInvalidDataError(results)
+    }
+
     const user = await knex(tableName)
       .select()
       .first()

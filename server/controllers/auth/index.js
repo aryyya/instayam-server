@@ -1,7 +1,10 @@
 const { sendAuthTokenResponse } = require('../../routes/helpers')
 const { User } = require('../../models')
 const sendError = require('../../helpers/send-error')
-const { UNAUTHORIZED } = require('http-status')
+const {
+  UNAUTHORIZED,
+  BAD_REQUEST
+} = require('http-status')
 const { body } = require('express-validator/check')
 
 // POST /sign-up
@@ -30,7 +33,7 @@ const postSignUpValidations = [
     })
 ]
 
-const postSignUp = async (request, response) => {
+const postSignUp = async (request, response, next) => {
   const {
     email,
     username,
@@ -44,6 +47,15 @@ const postSignUp = async (request, response) => {
     password,
     fullName
   })
+
+  if (user.error === User.error.INVALID_DATA) {
+    return next(
+      sendError({
+        code: BAD_REQUEST,
+        details: user.details
+      })
+    )
+  }
 
   return sendAuthTokenResponse(response, user)
 }
@@ -68,11 +80,20 @@ const postLogin = async (request, response, next) => {
     password
   })
 
-  if (user === User.error.NOT_FOUND || user === User.error.INVALID_CREDENTIALS) {
+  if (user.error === User.error.INVALID_DATA) {
+    return next(
+      sendError({
+        code: BAD_REQUEST,
+        details: user.details
+      })
+    )
+  }
+
+  else if (user === User.error.NOT_FOUND || user === User.error.INVALID_CREDENTIALS) {
     return next(
       sendError({
         code: UNAUTHORIZED,
-        message: 'invalid credentials'
+        details: 'invalid credentials'
       })
     )
   }
