@@ -6,7 +6,8 @@ const getBaseModel = require('../../helpers/get-base-model')
 const {
   NOT_FOUND,
   INVALID_CREDENTIALS,
-  INVALID_DATA
+  INVALID_DATA,
+  ALREADY_EXISTS
 } = require('./error')
 const {
   USERNAME_MIN_LENGTH,
@@ -65,6 +66,15 @@ module.exports = knex => {
     })
     if (results.error) {
       return joiInvalidDataError(results)
+    }
+
+    const existingUser = await baseModel.findOne({
+      username
+    })
+    if (existingUser) {
+      return {
+        error: ALREADY_EXISTS
+      }
     }
 
     const passwordHash = await hash(password, 10)

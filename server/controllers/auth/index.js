@@ -57,6 +57,15 @@ const postSignUp = async (request, response, next) => {
     )
   }
 
+  else if (user.error === User.error.ALREADY_EXISTS) {
+    return next(
+      sendError({
+        code: BAD_REQUEST,
+        details: 'username already exists'
+      })
+    )
+  }
+
   return sendAuthTokenResponse(response, user)
 }
 
